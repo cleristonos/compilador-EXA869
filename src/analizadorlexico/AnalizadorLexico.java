@@ -17,7 +17,7 @@ public class AnalizadorLexico {
             // TODO code application logic here
 
             Scanner scanner = new Scanner();
-            scanner.leitorEntrada(" if main class as1a1s a@sa3s_a  f_dt123r_f1d _abc -1 2555.355a55 +12.12323123 1 23 ");
+            scanner.leitorEntrada(" if main class as1a1s a@sa3s_a  f_dt123r_f1d _abc -1 2555.355a55 +12.12323123 1 23 ¬ £casa £teste £ 'asda'");
             
         } catch (Exception ex) {
             System.out.println(ex.getMessage());

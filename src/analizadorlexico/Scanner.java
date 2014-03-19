@@ -1,7 +1,5 @@
 package analizadorlexico;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author cleriston.os
@@ -16,16 +14,23 @@ public class Scanner {
         String cadeia = "";
 
         for (int i = 0; i < tamanhoEntrada; i++) {
+
             String caracterAtual = entrada.substring(i, i + 1);
 
             if (caracterAtual.equals("\n")) {
                 linha++;
                 coluna = 0;
             } else {
+
+                if (!verificaSimbolo(caracterAtual)) {
+                    System.out.println(caracterAtual + " simbolo mal formado linha" + linha + " coluna:" + coluna);
+                    continue;
+                }
                 cadeia = cadeia.concat(caracterAtual);
 //                if (caracterAtual.matches("[a-zA-Z]")) {
 //                   
-//                }
+//                }               
+
                 if (caracterAtual.equals(" ") || i + 1 == tamanhoEntrada) {
 
                     //remove espaço em branco
@@ -165,4 +170,10 @@ public class Scanner {
         return palavraEntrada.trim().matches("[-]?[0-9]*\\.?[0-9]*");
     }
 
+    public boolean verificaSimbolo(String palavraEntrada) {
+        int ascii = (int) palavraEntrada.charAt(0);
+
+        return ascii > 31 & ascii < 126 & ascii != 34 & ascii != 39;
+
+    }
 }
