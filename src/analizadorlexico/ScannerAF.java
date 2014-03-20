@@ -63,11 +63,17 @@ public class ScannerAF {
                         } else if (verificaLetra(caracterAtual) || verificaDigito(caracterAtual) || caracterAtual == '_') {
                             estado = 1;
                             cadeia = cadeia.concat("" + caracterAtual);
+                        } else if (verificaPalavraReservada(cadeia)) {
+                            System.out.println(cadeia + " é palavra reservada");
+                            cadeia = "";
+                            estado = 0;
+                            i--;
                         } else {
                             System.out.println(cadeia + " é Identificador");
                             cadeia = "";
                             estado = 0;
                             i--;
+
                         }
                         break;
                 }
@@ -76,9 +82,15 @@ public class ScannerAF {
 
         }
         if (cadeia.length() > 0 && estado == 1) {
-            System.out.println(cadeia + " é Identificador");
-            cadeia = "";
-            estado = 0;
+            if (verificaPalavraReservada(cadeia)) {
+                System.out.println(cadeia + " é palavra reservada");
+                cadeia = "";
+                estado = 0;
+            } else {
+                System.out.println(cadeia + " é Identificador");
+                cadeia = "";
+                estado = 0;
+            }
         }
 
     }
