@@ -6,6 +6,9 @@ package analizadorlexico;
  */
 public class Scanner {
 
+    public Scanner() {
+    }
+    
     public void leitorEntrada(String entrada) {
 
         int tamanhoEntrada = entrada.length();
@@ -19,13 +22,16 @@ public class Scanner {
 
             if (caracterAtual.equals("\n")) {
                 linha++;
-                coluna = 0;
+                coluna = 1;
             } else {
-
+                
+                //Primeiro verifica se existe algum caractere que não pertence ao alfabeto
                 if (!verificaSimbolo(caracterAtual)) {
-                    System.out.println(caracterAtual + " simbolo mal formado linha" + linha + " coluna:" + coluna);
+                    System.out.println(caracterAtual + " simbolo mal formado - linha" + linha + " coluna:" + coluna);
                     continue;
                 }
+                
+                
                 cadeia = cadeia.concat(caracterAtual);
 //                if (caracterAtual.matches("[a-zA-Z]")) {
 //                   
@@ -35,6 +41,7 @@ public class Scanner {
 
                     //remove espaço em branco
                     cadeia = cadeia.trim();
+                    
                     // se cadeia for vazia não faz verificações
                     if (cadeia.length() > 0) {
 
@@ -173,7 +180,7 @@ public class Scanner {
     public boolean verificaSimbolo(String palavraEntrada) {
         int ascii = (int) palavraEntrada.charAt(0);
 
-        return ascii > 31 & ascii < 126 & ascii != 34 & ascii != 39;
+        return ascii > 31 & ascii < 127 & ascii != 34 & ascii != 39;
 
     }
 }
