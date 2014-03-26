@@ -15,10 +15,12 @@ public class AnalizadorLexico {
         try {
             // TODO code application logic here
 
-            //Scanner scanner = new Scanner();
-            //scanner.leitorEntrada(" if main class as1a1s a@sa3s_a  f_dt123r_f1d _abc -1 2555.355a55 +12.12323123 1 23 ¬ £casa £teste £ 'asda'");
+//            Scanner scanner = new Scanner();
+//            scanner.leitorEntrada(" if main class as1a1s a@sa3s_a  f_dt123r_f1d _abc -1 2555.355a55 +12.12323123 1 23 ¬ £casa £teste £ 'asda'");
             ScannerAF scanner = new ScannerAF();
-            scanner.leitorEntrada("if main class as1a1s a@sa3s_a  f_dt123r_f1d _abc -1 2555.355a55 +12.12323123 1 23 ¬ £casa £teste £ 'asda'");
+            scanner.leitorEntrada(" if main class-3  as1a1s)-2 a@sa3s_a f_dt123r_f1d _abc -1 2555.355a55 +12.12323123  a 1 23 ¬ £casa £teste £ 'asda'");
+            
+            //scanner.leitorEntrada("a");
 
         } catch (Exception ex) {
             System.out.println(ex.getMessage());

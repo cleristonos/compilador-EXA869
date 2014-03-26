@@ -12,9 +12,11 @@ public class ScannerAF {
 
     private int estado;
     private String cadeia;
-    //private boolean aceito;
+    //private char caracterAtual;
 
+    //private boolean aceito;
     public ScannerAF() {
+
         this.estado = 0;
         cadeia = "";
         //aceito = false;
@@ -22,77 +24,62 @@ public class ScannerAF {
 
     public void leitorEntrada(String entrada) {
 
+        entrada = entrada + "¬";
+        System.out.println(entrada);
         int tamanhoEntrada = entrada.length();
         int linha = 1;
-        int coluna = 1;
+        //int coluna = 0; coluna = i - lastColuna;
+        int lastColuna = 0;
 
         for (int i = 0; i < tamanhoEntrada; i++) {
-
             char caracterAtual = entrada.charAt(i);
-            //System.out.println("Estado: " + estado + " - Debug: " + cadeia + " Consumindo:" + caracterAtual);
 
             if (caracterAtual == '\n') {
                 linha++;
-                coluna = 1;
-            } else {
-                //cadeia = cadeia.concat("" + caracterAtual);
+                lastColuna = i;
+            }            
 
-                switch (estado) {
-                    case 0:
-                        if (!verificaSimbolo(caracterAtual)) {
-                            System.out.println("ERRO Símbolo não identificado - " + caracterAtual + " Não pertence ao alfabeto");
-                            cadeia = "";
-                        } else if (verificaDigito(caracterAtual)) {
-                            //Faz nada...
-                        } else if (caracterAtual == '_') {
-                            //faz nada...
-                        } else if (verificaLetra(caracterAtual)) {
-                            estado = 1;
-                            cadeia = cadeia.concat("" + caracterAtual);
-                        }
-                        break;
-
-                    case 1:
-                        if (!verificaSimbolo(caracterAtual)) {
-                            System.out.println(cadeia + " é Identificador");
-                            //System.out.println("ERRO Símbolo não identificado - " + caracterAtual + " Não pertence ao alfabeto");
-                            cadeia = "";
-                            estado = 0;
-                            i--;
-
-                        } else if (verificaLetra(caracterAtual) || verificaDigito(caracterAtual) || caracterAtual == '_') {
-                            estado = 1;
-                            cadeia = cadeia.concat("" + caracterAtual);
-                        } else if (verificaPalavraReservada(cadeia)) {
-                            System.out.println(cadeia + " é palavra reservada");
-                            cadeia = "";
-                            estado = 0;
-                            i--;
-                        } else {
-                            System.out.println(cadeia + " é Identificador");
-                            cadeia = "";
-                            estado = 0;
-                            i--;
-
-                        }
-                        break;
+            /*if (!verificaSimbolo(caracterAtual)) {
+             System.out.println("ERRO Símbolo não identificado - " + caracterAtual + " Não pertence ao alfabeto");
+             cadeia = "";
+             }*/
+            if (estado == 0) {
+                if (caracterAtual == '-') {
+                    //Operador
+                   i =  barriuMenos(entrada, i, cadeia);
+                    //estado = 3;
+                    //i = verificaNumero(entrada, i, cadeia);
+                } else if (verificaDigito(caracterAtual)) {
+                    estado = 3;
+                    i = verificaNumero(entrada, i, cadeia);
+                } else if (verificaLetra(caracterAtual)) {
+                    estado = 1;
+                    i = verificaIdentificador(entrada, i, cadeia);
                 }
-                coluna++;
             }
 
+            if ((i + 1) == tamanhoEntrada && caracterAtual == '¬') {
+                System.out.println("EOF");
+                continue;
+            }
         }
-        if (cadeia.length() > 0 && estado == 1) {
-            if (verificaPalavraReservada(cadeia)) {
-                System.out.println(cadeia + " é palavra reservada");
-                cadeia = "";
-                estado = 0;
+
+    }
+
+    private int barriuMenos(String entrada, int i, String cadeia) {
+
+        if (verificaDigito(entrada.charAt(i + 1))) {
+            if ((verificaDigito(entrada.charAt(i - 1)) || verificaLetra(entrada.charAt(i - 1)) || entrada.charAt(i - 1) == ')')) {
+                //É um Operador
             } else {
-                System.out.println(cadeia + " é Identificador");
-                cadeia = "";
-                estado = 0;
+                //é um Número
+                this.cadeia = "-";
+                 //i = verificaNumero(entrada, i+2, "-");
             }
+        } else {
+            //Operador
         }
-
+        return i;
     }
 
     public boolean verificaLetra(char caracter) {
@@ -184,11 +171,141 @@ public class ScannerAF {
 
     }
 
-    public boolean verificaIdentificador(String palavraEntrada) {
-        return palavraEntrada.trim().matches("[a-zA-Z]([a-zA-Z]|[0-9]|_)*");
+    private int verificaIdentificador(String entrada, int i, String cadeia) {
+        int tam = entrada.length();
+        char caracterAtual;
+        int j;
+        for (j = i; j < tam; j++) {
+            caracterAtual = entrada.charAt(j);
+
+            switch (estado) {
+
+                case 1:
+                    if (verificaLetra(caracterAtual) || verificaDigito(caracterAtual) || caracterAtual == '_') {
+
+                        estado = 1;
+                        cadeia = cadeia.concat("" + caracterAtual);
+                    } else {
+                        estado = 2;
+                        j--;
+                    }
+                    break;
+                case 2:
+                    if (verificaPalavraReservada(cadeia)) {
+                        System.out.println(cadeia + " é palavra reservada");
+                        cadeia = "";
+                        estado = 0;
+                        j--;
+                    } else {
+                        System.out.println(cadeia + " é Identificador");
+                        cadeia = "";
+                        estado = 0;
+                        j--;
+                    }
+                    break;
+
+                default:
+                    return i + (j - i) - 1;
+
+            }
+
+        }
+
+        return i + (j - i) - 1;
     }
 
-    public boolean verificaNumero(String palavraEntrada) {
-        return palavraEntrada.trim().matches("[-]?[0-9]*\\.?[0-9]*");
+    public boolean verificaIdentificadorTemp(String palavraEntrada) {
+        return palavraEntrada.trim().matches(" ");
     }
+
+    public int verificaNumero(String entrada, int i, String cadeia) {
+
+        int tam = entrada.length();
+        char caracterAtual;
+        int j;
+
+        for (j = i; j < tam; j++) {
+
+            caracterAtual = entrada.charAt(j);
+
+            switch (estado) {
+
+                case 3:
+                    if (verificaDigito(caracterAtual)) {
+                        estado = 3;
+                        cadeia = cadeia.concat("" + caracterAtual);
+                    } else if (caracterAtual == '.') {
+                        estado = 4;
+                        cadeia = cadeia.concat("" + caracterAtual);
+                    } else {
+                        estado = 5;
+                        j--;
+                    }
+
+                    break;
+                case 4:
+                    if (verificaDigito(caracterAtual)) {
+                        estado = 4;
+                        cadeia = cadeia.concat("" + caracterAtual);
+                    } else {
+                        estado = 5;
+                        j--;
+                    }
+                    break;
+                case 5:
+                    System.out.println(cadeia + " é numero");
+                    this.cadeia = "";
+                    estado = 0;
+                    j--;
+                    break;
+                default:
+                    return i + (j - i) - 1;
+
+            }
+
+        }
+
+        return i + (j - i) - 1;
+
+        // return palavraEntrada.trim().matches("[-]?[0-9]*\\.?[0-9]*");
+    }
+
+    public boolean verificaOperador(String palavraEntrada) {
+
+        return false;
+    }
+
+    public boolean verificaDelimitador(String palavraEntrada) {
+        switch (palavraEntrada.trim()) {
+
+            case ";":
+                return true;
+
+            case ",":
+                return true;
+
+            case "(":
+                return true;
+
+            case ")":
+                return true;
+
+            case "{":
+                return true;
+
+            case "}":
+                return true;
+
+            case "[":
+                return true;
+
+            case "]":
+                return true;
+
+            default:
+                return false;
+            // etc...
+        }
+    }
+
 }
