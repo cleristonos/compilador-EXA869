@@ -71,12 +71,15 @@ public class ScannerAF {
                 } else if (verificaInicioDeOperador(caracterAtual)) {
                     estado = 6;
                     i = verificaOperador(entrada, i, cadeia);
+                } else if (caracterAtual == '/' && entrada.charAt(i + 1) == '*') {
+                    estado = 31;
+                    i = verificaComentarioBloco(entrada, i, cadeia);
                 } else if (caracterAtual == '/') {
                     estado = 18;
                     i = verificaBarra(entrada, i, cadeia);
                 } else if (verificaDelimitador(caracterAtual)) {
                     //System.out.println(caracterAtual + " é Delimitador: Linha " + linha + " - Coluna " + (i - lastColuna));
-                    tokens.add(new Token(caracterAtual+"", (i - lastColuna), linha, "Delimitador"));
+                    tokens.add(new Token(caracterAtual + "", (i - lastColuna), linha, "Delimitador"));
                     saida = saida + "\n" + caracterAtual + " é Delimitador: Linha " + linha + " - Coluna " + (i - lastColuna);
                 }
             } else {
@@ -97,7 +100,7 @@ public class ScannerAF {
     private int barriuMenos(String entrada, int i, String cadeia) {
 
         if (verificaDigito(entrada.charAt(i + 1))) {
-            if ((verificaDigito(entrada.charAt(i - 1)) || verificaLetra(entrada.charAt(i - 1)) || entrada.charAt(i - 1) == ')' )) {
+            if ((verificaDigito(entrada.charAt(i - 1)) || verificaLetra(entrada.charAt(i - 1)) || entrada.charAt(i - 1) == ')')) {
                 //É um Operador
                 estado = 6;
                 i = verificaOperador(entrada, i, cadeia);
@@ -300,13 +303,14 @@ public class ScannerAF {
                     } else if (caracterAtual == ' ' || caracterAtual == '\n') {
                         estado = 2;
                         j--;
-                    } else if (verificaDelimitador(caracterAtual) || verificaInicioDeOperador(caracterAtual) || caracterAtual =='-') {
+                        //verificar se a condição abaixo está tratando todos os casos
+                    } else if (verificaDelimitador(caracterAtual) || verificaInicioDeOperador(caracterAtual) || caracterAtual == '-') {
                         estado = 2;
                         j--;
                     } else {
                         cadeia = cadeia.concat("" + caracterAtual);
                         estado = 98;
-                       
+
                     }
                     break;
                 case 2:
@@ -329,15 +333,15 @@ public class ScannerAF {
 
                 case 98:
 
-                    if (caracterAtual == ' '){
+                    if (caracterAtual == ' ') {
                         tokens.add(new Token(cadeia, (i - lastColuna), linha, "Identificador mal formado"));
                         this.cadeia = "";
                         estado = 0;
-                    
-                    }else if(verificaDelimitador(caracterAtual) || verificaInicioDeOperador(caracterAtual)) {
+
+                    } else if (verificaDelimitador(caracterAtual) || verificaInicioDeOperador(caracterAtual)) {
                         tokens.add(new Token(cadeia, (i - lastColuna), linha, "Identificador mal formado"));
                         this.cadeia = "";
-                      
+
                         estado = 0;
                         j--;
                     } else {
@@ -782,9 +786,62 @@ public class ScannerAF {
         return tokens;
     }
 
-    public boolean verificaSeparadorLexema(char caracter) {
+    private int verificaComentarioBloco(String entrada, int i, String cadeia) {
+        int tam = entrada.length();
+        char caracterAtual;
+        int j;
 
-        return true;
+        for (j = i; j < tam; j++) {
+
+            caracterAtual = entrada.charAt(j);
+
+            switch (estado) {
+
+                case 31:
+                    if (caracterAtual == '/') {
+                        estado = 32;
+                        cadeia = cadeia.concat("" + caracterAtual);
+                    }
+                    break;
+                case 32:
+                    if (caracterAtual == '*') {
+                        estado = 33;
+                        cadeia = cadeia.concat("" + caracterAtual);
+                    }
+                    break;
+                case 33:
+                  
+                    if ((j + 1) == tam && caracterAtual == '¬') {
+                        //cadeia = cadeia.concat("" + caracterAtual);
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "Bloco de Comentario mal formado EOF"));
+                        this.cadeia = "";
+                        estado = 0;
+                    } else if (caracterAtual == '*' && entrada.charAt(j+1) == '/') {
+                        cadeia = cadeia.concat("" + caracterAtual);
+                        estado = 34;
+                    } else {
+                        cadeia = cadeia.concat("" + caracterAtual);
+                        estado = 33;
+                    }
+                    break;
+
+                case 34:
+                    if (caracterAtual == '/') {
+                        cadeia = cadeia.concat("" + caracterAtual);
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "Bloco de Comentario"));
+                        saida = saida + "\n" + cadeia + " é Bloco de Comentario: Linha " + linha + " - Coluna " + (i - lastColuna);
+                        this.cadeia = "";
+                        estado = 0;
+                    }
+                    break;
+
+                default:
+                    return i + (j - i) - 1;
+
+            }
+
+        }
+        return i + (j - i) - 1;
     }
 
 }
