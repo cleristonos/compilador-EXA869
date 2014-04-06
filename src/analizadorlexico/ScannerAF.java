@@ -611,6 +611,7 @@ public class ScannerAF {
         }
     }
 
+     // Char está ok, salvando erros e tokens validos
     private int verificaString(String entrada, int i, String cadeia) {
 
         int tam = entrada.length();
@@ -630,13 +631,17 @@ public class ScannerAF {
                     }
                     break;
                 case 25:
-                    if (caracterAtual != '"' && verificaSimbolo(caracterAtual)) {
+
+                    if (verificaSimbolo(caracterAtual)) {
+                        cadeia = cadeia.concat("" + caracterAtual);
                         estado = 25;
+                    } else if (caracterAtual == '"') {
                         cadeia = cadeia.concat("" + caracterAtual);
-                    } else {
-                        cadeia = cadeia.concat("" + caracterAtual);
-                        estado = 0;
+                        estado = 26;
                         j--;
+                    } else {
+                        j--;
+                        estado = 99;
                     }
                     break;
                 case 26:
@@ -645,7 +650,25 @@ public class ScannerAF {
                         saida = saida + "\n" + cadeia + " é string: Linha " + linha + " - Coluna " + (i - lastColuna);
                         this.cadeia = "";
                         estado = 0;
+                    }
+                    break;
 
+                case 99:
+
+                    if (caracterAtual == '"') {
+                        cadeia = cadeia.concat("" + caracterAtual);
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "String mal formada"));
+                        this.cadeia = "";
+                        estado = 0;
+                    } else {
+                        if ((j + 1) == tam && caracterAtual == '¬') {
+                            tokens.add(new Token(cadeia, (i - lastColuna), linha, "String mal formada EOF"));
+                            this.cadeia = "";
+                            estado = 0;
+                        } else {
+                            cadeia = cadeia.concat("" + caracterAtual);
+                            estado = 99;
+                        }
                     }
                     break;
 
@@ -657,9 +680,8 @@ public class ScannerAF {
         }
         return i + (j - i) - 1;
     }
-    
 
-   // Char está ok, salvando erros e tokens validos
+    // Char está ok, salvando erros e tokens validos
     private int verificaChar(String entrada, int i, String cadeia) {
 
         int tam = entrada.length();
@@ -680,7 +702,7 @@ public class ScannerAF {
                     break;
                 case 28:
                     if (verificaSimbolo(caracterAtual) && caracterAtual != ' ') {
-                        
+
                         cadeia = cadeia.concat("" + caracterAtual);
                         estado = 29;
                     } else {
@@ -709,8 +731,14 @@ public class ScannerAF {
                         this.cadeia = "";
                         estado = 0;
                     } else {
-                        cadeia = cadeia.concat("" + caracterAtual);
-                        estado = 30;
+                        if ((j + 1) == tam && caracterAtual == '¬') {
+                            tokens.add(new Token(cadeia, (i - lastColuna), linha, "Char mal formado EOF"));
+                            this.cadeia = "";
+                            estado = 0;
+                        } else {
+                            cadeia = cadeia.concat("" + caracterAtual);
+                            estado = 30;
+                        }
                     }
                     break;
                 default:
