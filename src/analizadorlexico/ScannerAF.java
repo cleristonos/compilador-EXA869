@@ -45,11 +45,6 @@ public class ScannerAF {
                 lastColuna = i;
             }
 
-            /*if (!verificaSimbolo(caracterAtual)) {
-             System.out.println("ERRO Símbolo não identificado - " + caracterAtual + " Não pertence ao alfabeto");
-             cadeia = "";
-             }*/
-            //Estado Inicial
             if (estado == 0) {
                 if (caracterAtual == '\'') {
                     estado = 27;
