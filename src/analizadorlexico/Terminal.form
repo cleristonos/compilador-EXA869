@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.8" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.8" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
-    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -79,7 +78,13 @@
               </Group>
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jScrollPane1" max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="jScrollPane1" max="32767" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          <Component id="botaoGeraTabela" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -91,7 +96,9 @@
                   <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="jScrollPane1" max="32767" attributes="0"/>
-                  <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
+                  <Component id="botaoGeraTabela" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -107,9 +114,15 @@
             <Component class="javax.swing.JTextArea" name="saida">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="ff" green="ff" red="cc" type="rgb"/>
+                  <Color blue="0" green="0" red="0" type="rgb"/>
                 </Property>
                 <Property name="columns" type="int" value="20"/>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Monospaced" size="13" style="1"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
                 <Property name="rows" type="int" value="5"/>
               </Properties>
             </Component>
@@ -119,6 +132,14 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="SA&#xcd;DA"/>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="botaoGeraTabela">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Gerar Tabela de S&#xed;mbolos"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botaoGeraTabelaActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -170,7 +191,7 @@
               <Properties>
                 <Property name="columns" type="int" value="20"/>
                 <Property name="rows" type="int" value="5"/>
-                <Property name="text" type="java.lang.String" value="if main class-3  as1a1s)-2 a@sa3s_a f_dt123r_f1d _abc -1 2555.355a55 +12.12323123 \u005c&quot;string1\u005c&quot; \u005c&quot;string222222222222222222222222222222222\u005c&quot;   a 1 23 &#xac; &#xa3;casa &#xa3;teste &#xa3; &apos;asda&apos; \u005c&quot;string mal formada" containsInvalidXMLChars="true"/>
+                <Property name="text" type="java.lang.String" value="25 25.5 255. 255.a 255aa 255.55a -255.5 -25. -26.58@&#xa;if main class-3  as1a1s)-2 a@sa3s_a &#xa;   f_dt123r_f1d _abc -1 2555.355a55 &#xa;+12.12323123 \u005c&quot;string1\u005c&quot; \u005c&quot;string222222222222222222222222222222222\u005c&quot;   &#xa; &#xa; a 1 23 &#xac; &#xa3;casa &#xa;&#xa3;teste &#xa3; &apos;asda&apos; \u005c&quot;string mal formada" containsInvalidXMLChars="true"/>
               </Properties>
               <Events>
                 <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="codigoCaretUpdate"/>

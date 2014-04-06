@@ -13,23 +13,19 @@ import java.util.ArrayList;
 public class ScannerAF {
 
     private int estado, linha, lastColuna;
-    private String cadeia, saida;
+    private String cadeia;
     private ArrayList<Token> tokens = new ArrayList<Token>();
 
-    ;
-    //private char caracterAtual;
-
-    //private boolean aceito;
     public ScannerAF() {
 
         this.estado = 0;
         cadeia = "";
-        //aceito = false;
     }
 
-    public String lerEntrada(String entrada) {
+    public ArrayList<Token> lerEntrada(String entrada) {
 
-        saida = new String();
+        ArrayList<Token> tabelaSimbolos = new ArrayList<>();
+        //saida = new String();
         entrada = entrada + "¬";
         System.out.println(entrada);
         int tamanhoEntrada = entrada.length();
@@ -74,22 +70,28 @@ public class ScannerAF {
                     i = verificaBarra(entrada, i, cadeia);
                 } else if (verificaDelimitador(caracterAtual)) {
                     //System.out.println(caracterAtual + " é Delimitador: Linha " + linha + " - Coluna " + (i - lastColuna));
-                    tokens.add(new Token(caracterAtual + "", (i - lastColuna), linha, "Delimitador"));
-                    saida = saida + "\n" + caracterAtual + " é Delimitador: Linha " + linha + " - Coluna " + (i - lastColuna);
+                    tokens.add(new Token(caracterAtual + "", (i - lastColuna), linha, 6));
+                    //saida = saida + "\n" + caracterAtual + " é Delimitador: Linha " + linha + " - Coluna " + (i - lastColuna);
+                } else if (verificaSimbolo(caracterAtual) && (caracterAtual != '\n' && caracterAtual != ' ')) {
+                    tokens.add(new Token(caracterAtual + "", (i - lastColuna), linha, 14));//Símbolo Mal formado
+                } else {
+                    if ((caracterAtual != '\n' && caracterAtual != ' ')) {
+                        tokens.add(new Token(caracterAtual + "", (i - lastColuna), linha, 15));//Não Pertence ao Alfabeto
+                    }
                 }
             } else {
                 //goToEstado();
             }
 
             if ((i + 1) == tamanhoEntrada && caracterAtual == '¬') {
-                //System.out.println("EOF");
-                saida = saida + "\n" + "EOF";
+                System.out.println("EOF");
+                //saida = saida + "\n" + "EOF";
 
                 continue;
             }
         }
         //System.out.println(saida);
-        return saida;
+        return tabelaSimbolos;
     }
 
     private int barriuMenos(String entrada, int i, String cadeia) {
@@ -176,8 +178,8 @@ public class ScannerAF {
                     break;
 
                 case 23:
-                    tokens.add(new Token(cadeia, (i - lastColuna), linha, "Comentario"));
-                    saida = saida + "\n" + cadeia + " é Comentário: Linha " + linha + " - Coluna " + (i - lastColuna);
+                    tokens.add(new Token(cadeia, (i - lastColuna), linha, 7));
+//                    saida = saida + "\n" + cadeia + " é Comentário: Linha " + linha + " - Coluna " + (i - lastColuna);
                     cadeia = "";
                     estado = 0;
                     j--;
@@ -311,15 +313,15 @@ public class ScannerAF {
                 case 2:
                     if (verificaPalavraReservada(cadeia)) {
                         //System.out.println(cadeia + " é palavra reservada");
-                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "Palavra Reservada"));
-                        saida = saida + "\n" + cadeia + " é palavra reservada: Linha " + linha + " - Coluna " + (i - lastColuna);
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, 0));
+//                        saida = saida + "\n" + cadeia + " é palavra reservada: Linha " + linha + " - Coluna " + (i - lastColuna);
                         cadeia = "";
                         estado = 0;
                         j--;
                     } else {
                         //System.out.println(cadeia + " é Identificador");
-                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "Identificador"));
-                        saida = saida + "\n" + cadeia + " é Identificador: Linha " + linha + " - Coluna " + (i - lastColuna);
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, 1));
+                        //                       saida = saida + "\n" + cadeia + " é Identificador: Linha " + linha + " - Coluna " + (i - lastColuna);
                         cadeia = "";
                         estado = 0;
                         j--;
@@ -329,14 +331,13 @@ public class ScannerAF {
                 case 98:
 
                     if (caracterAtual == ' ') {
-                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "Identificador mal formado"));
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, 8));
                         this.cadeia = "";
                         estado = 0;
 
-                    } else if (verificaDelimitador(caracterAtual) || verificaInicioDeOperador(caracterAtual)) {
-                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "Identificador mal formado"));
+                    } else if (verificaDelimitador(caracterAtual) || verificaInicioDeOperador(caracterAtual)) {//Colocar (...|| caracterAtual == '-')????
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, 8));
                         this.cadeia = "";
-
                         estado = 0;
                         j--;
                     } else {
@@ -373,11 +374,14 @@ public class ScannerAF {
                         estado = 3;
                         cadeia = cadeia.concat("" + caracterAtual);
                     } else if (caracterAtual == '.') {
-                        estado = 4;
+                        estado = 96;
                         cadeia = cadeia.concat("" + caracterAtual);
-                    } else {
+                    } else if (verificaDelimitador(caracterAtual) || verificaInicioDeOperador(caracterAtual) || caracterAtual == ' ' || caracterAtual == '\n') {
                         estado = 5;
                         j--;
+                    } else {
+                        estado = 97;
+                        cadeia = cadeia.concat("" + caracterAtual);
                     }
 
                     break;
@@ -385,19 +389,51 @@ public class ScannerAF {
                     if (verificaDigito(caracterAtual)) {
                         estado = 4;
                         cadeia = cadeia.concat("" + caracterAtual);
-                    } else {
+                    } else if (verificaDelimitador(caracterAtual) || verificaInicioDeOperador(caracterAtual) || caracterAtual == ' ' || caracterAtual == '\n') {
                         estado = 5;
                         j--;
+                    } else {
+                        estado = 97;
+                        cadeia = cadeia.concat("" + caracterAtual);
                     }
                     break;
-                case 5:
-                    //System.out.println(cadeia + " é numero");
-                    tokens.add(new Token(cadeia, (i - lastColuna), linha, "Numero"));
-                    saida = saida + "\n" + cadeia + " é numero: Linha " + linha + " - Coluna " + (i - lastColuna);
+
+                case 5://Aceita
+                    tokens.add(new Token(cadeia, (i - lastColuna), linha, 2));
+//                    saida = saida + "\n" + cadeia + " é numero: Linha " + linha + " - Coluna " + (i - lastColuna);
                     this.cadeia = "";
                     estado = 0;
                     j--;
                     break;
+
+                case 96://Estado Ponto --Só aceita Número
+                    if (verificaDigito(caracterAtual)) {
+                        estado = 4;
+                        cadeia = cadeia.concat("" + caracterAtual);
+                    } else {
+                        estado = 97;
+                        j--;
+                    }
+                    break;
+
+                case 97:    //Número mal formado
+
+                    if (caracterAtual == ' ') {
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, 9));
+                        this.cadeia = "";
+                        estado = 0;
+
+                    } else if (verificaDelimitador(caracterAtual) || verificaInicioDeOperador(caracterAtual) || caracterAtual == '\n') {//Colocar (...|| caracterAtual == '-')????
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, 9));
+                        this.cadeia = "";
+                        estado = 0;
+                        j--;
+                    } else {
+                        cadeia = cadeia.concat("" + caracterAtual);
+                        estado = 97;
+                    }
+                    break;
+
                 default:
                     return i + (j - i) - 1;
 
@@ -534,8 +570,8 @@ public class ScannerAF {
 
                 case 15:    //Aceitação por "Outro"
                     //System.out.println(cadeia + " é Operador: Linha " + linha + " - Coluna " + (i - lastColuna));
-                    tokens.add(new Token(cadeia, (i - lastColuna), linha, "Operador"));
-                    saida = saida + "\n" + cadeia + " é Operador: Linha " + linha + " - Coluna " + (i - lastColuna);
+                    tokens.add(new Token(cadeia, (i - lastColuna), linha, 5));
+//                    saida = saida + "\n" + cadeia + " é Operador: Linha " + linha + " - Coluna " + (i - lastColuna);
                     this.cadeia = "";
                     estado = 0;
                     j = j - 2;
@@ -543,8 +579,8 @@ public class ScannerAF {
 
                 case 16:    //Aceitação
                     //System.out.println(cadeia + " é Operador: Linha " + linha + " - Coluna " + (i - lastColuna));
-                    tokens.add(new Token(cadeia, (i - lastColuna), linha, "Operador"));
-                    saida = saida + "\n" + cadeia + " é Operador: Linha " + linha + " - Coluna " + (i - lastColuna);
+                    tokens.add(new Token(cadeia, (i - lastColuna), linha, 5));
+//                    saida = saida + "\n" + cadeia + " é Operador: Linha " + linha + " - Coluna " + (i - lastColuna);
                     this.cadeia = "";
                     estado = 0;
                     j--;
@@ -552,8 +588,8 @@ public class ScannerAF {
 
                 case 17:    //Erro identificador mal formado
                     //System.out.println("Erro identificador mal formado: Linha " + linha + " - Coluna " + (i - lastColuna));
-                    tokens.add(new Token(cadeia, (i - lastColuna), linha, "Erro Operador mal formado"));
-                    saida = saida + "\n" + "Erro Operador mal formado: Linha " + linha + " - Coluna " + (i - lastColuna);
+                    tokens.add(new Token(cadeia, (i - lastColuna), linha, 12));
+//                    saida = saida + "\n" + "Erro Operador mal formado: Linha " + linha + " - Coluna " + (i - lastColuna);
                     this.cadeia = "";
                     estado = 0;
                     j = j - 2;
@@ -673,8 +709,8 @@ public class ScannerAF {
                     break;
                 case 26:
                     if (caracterAtual == '"') {
-                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "String"));
-                        saida = saida + "\n" + cadeia + " é string: Linha " + linha + " - Coluna " + (i - lastColuna);
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, 3));
+//                        saida = saida + "\n" + cadeia + " é string: Linha " + linha + " - Coluna " + (i - lastColuna);
                         this.cadeia = "";
                         estado = 0;
                     }
@@ -684,12 +720,12 @@ public class ScannerAF {
 
                     if (caracterAtual == '"') {
                         cadeia = cadeia.concat("" + caracterAtual);
-                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "String mal formada"));
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, 10));
                         this.cadeia = "";
                         estado = 0;
                     } else {
                         if ((j + 1) == tam && caracterAtual == '¬') {
-                            tokens.add(new Token(cadeia, (i - lastColuna), linha, "String mal formada EOF"));
+                            tokens.add(new Token(cadeia, (i - lastColuna), linha, 10));//EOF
                             this.cadeia = "";
                             estado = 0;
                         } else {
@@ -740,8 +776,8 @@ public class ScannerAF {
                 case 29:
                     if (caracterAtual == '\'') {
                         cadeia = cadeia.concat("" + caracterAtual);
-                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "Char"));
-                        saida = saida + "\n" + cadeia + " é char: Linha " + linha + " - Coluna " + (i - lastColuna);
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, 4));
+//                        saida = saida + "\n" + cadeia + " é char: Linha " + linha + " - Coluna " + (i - lastColuna);
                         this.cadeia = "";
                         estado = 0;
 
@@ -754,12 +790,12 @@ public class ScannerAF {
                 case 30:
                     if (caracterAtual == '\'') {
                         cadeia = cadeia.concat("" + caracterAtual);
-                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "Char mal formado"));
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, 11));
                         this.cadeia = "";
                         estado = 0;
                     } else {
                         if ((j + 1) == tam && caracterAtual == '¬') {
-                            tokens.add(new Token(cadeia, (i - lastColuna), linha, "Char mal formado EOF"));
+                            tokens.add(new Token(cadeia, (i - lastColuna), linha, 11));
                             this.cadeia = "";
                             estado = 0;
                         } else {
@@ -805,13 +841,13 @@ public class ScannerAF {
                     }
                     break;
                 case 33:
-                  
+
                     if ((j + 1) == tam && caracterAtual == '¬') {
                         //cadeia = cadeia.concat("" + caracterAtual);
-                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "Bloco de Comentario mal formado EOF"));
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, 13));
                         this.cadeia = "";
                         estado = 0;
-                    } else if (caracterAtual == '*' && entrada.charAt(j+1) == '/') {
+                    } else if (caracterAtual == '*' && entrada.charAt(j + 1) == '/') {
                         cadeia = cadeia.concat("" + caracterAtual);
                         estado = 34;
                     } else {
@@ -823,8 +859,8 @@ public class ScannerAF {
                 case 34:
                     if (caracterAtual == '/') {
                         cadeia = cadeia.concat("" + caracterAtual);
-                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "Bloco de Comentario"));
-                        saida = saida + "\n" + cadeia + " é Bloco de Comentario: Linha " + linha + " - Coluna " + (i - lastColuna);
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, 7));
+//                        saida = saida + "\n" + cadeia + " é Bloco de Comentario: Linha " + linha + " - Coluna " + (i - lastColuna);
                         this.cadeia = "";
                         estado = 0;
                     }
@@ -838,5 +874,4 @@ public class ScannerAF {
         }
         return i + (j - i) - 1;
     }
-
 }

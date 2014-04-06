@@ -4,22 +4,25 @@
  */
 package analizadorlexico;
 
-/**
- *
- * @author Netto
- */
+import java.util.ArrayList;
+
 public class Terminal extends javax.swing.JFrame {
-
+    
     private ScannerController sc;
-
+    private ArrayList<Token> tabelaTokens;
+    
     public Terminal() {
         initComponents();
         this.setVisible(true);
     }
-
-    public Terminal(ScannerController sc) {  
+    
+    public Terminal(ScannerController sc) {
         initComponents();
         this.sc = sc;
+        
+        tabelaTokens = new ArrayList<>();
+        botaoGeraTabela.setVisible(false);
+        
         this.setVisible(true);
     }
 
@@ -36,6 +39,7 @@ public class Terminal extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         saida = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
+        botaoGeraTabela = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         codigo = new javax.swing.JTextArea();
@@ -47,12 +51,21 @@ public class Terminal extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        saida.setBackground(new java.awt.Color(204, 255, 255));
+        saida.setBackground(new java.awt.Color(0, 0, 0));
         saida.setColumns(20);
+        saida.setFont(new java.awt.Font("Monospaced", 1, 13)); // NOI18N
+        saida.setForeground(new java.awt.Color(255, 255, 255));
         saida.setRows(5);
         jScrollPane1.setViewportView(saida);
 
         jLabel1.setText("SAÍDA");
+
+        botaoGeraTabela.setText("Gerar Tabela de Símbolos");
+        botaoGeraTabela.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoGeraTabelaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -64,7 +77,11 @@ public class Terminal extends javax.swing.JFrame {
                 .addContainerGap(194, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(botaoGeraTabela)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -74,14 +91,16 @@ public class Terminal extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1)
-                .addGap(45, 45, 45))
+                .addGap(11, 11, 11)
+                .addComponent(botaoGeraTabela)
+                .addContainerGap())
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         codigo.setColumns(20);
         codigo.setRows(5);
-        codigo.setText("if main class-3  as1a1s)-2 a@sa3s_a f_dt123r_f1d _abc -1 2555.355a55 +12.12323123 \\\"string1\\\" \\\"string222222222222222222222222222222222\\\"   a 1 23 ¬ £casa £teste £ 'asda' \\\"string mal formada");
+        codigo.setText("25 25.5 255. 255.a 255aa 255.55a -255.5 -25. -26.58@\nif main class-3  as1a1s)-2 a@sa3s_a \n   f_dt123r_f1d _abc -1 2555.355a55 \n+12.12323123 \\\"string1\\\" \\\"string222222222222222222222222222222222\\\"   \n \n a 1 23 ¬ £casa \n£teste £ 'asda' \\\"string mal formada");
         codigo.addCaretListener(new javax.swing.event.CaretListener() {
             public void caretUpdate(javax.swing.event.CaretEvent evt) {
                 codigoCaretUpdate(evt);
@@ -163,24 +182,43 @@ public class Terminal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void executarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executarActionPerformed
+        
+        String saida = "";
+        sc.getScanner().lerEntrada(codigo.getText());
 
-        String saida = sc.getScanner().lerEntrada(codigo.getText());
+        //Set Tabela de Símbolos
+        tabelaTokens = sc.getScanner().getTokens();
+
+        //System.out.println("Resultado:");
+        for (Token token : tabelaTokens) {
+            saida += token.getLexema() + " - " + token.decodificaCLassificacao(token.getClassificacao()) + "\n";
+        }
+        
         this.saida.setText(saida);
-
+        
+        if (tabelaTokens.size() > 0) {
+            botaoGeraTabela.setVisible(true);
+        }
+        
+        
     }//GEN-LAST:event_executarActionPerformed
-
+    
     private void sairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sairActionPerformed
         System.exit(0);
     }//GEN-LAST:event_sairActionPerformed
-
+    
     private void codigoCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_codigoCaretUpdate
-
-        String saida = sc.getScanner().lerEntrada(codigo.getText());
-        this.saida.setText(saida);
-
+        //String saida = sc.getScanner().lerEntrada(codigo.getText());
+        //this.saida.setText(saida);
     }//GEN-LAST:event_codigoCaretUpdate
-
+    
+    private void botaoGeraTabelaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoGeraTabelaActionPerformed
+        
+        new TabelaSimbolos(tabelaTokens);
+        
+    }//GEN-LAST:event_botaoGeraTabelaActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton botaoGeraTabela;
     private javax.swing.JTextArea codigo;
     private javax.swing.JButton executar;
     private javax.swing.JLabel jLabel1;
