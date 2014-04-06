@@ -76,7 +76,7 @@ public class ScannerAF {
                     i = verificaBarra(entrada, i, cadeia);
                 } else if (verificaDelimitador(caracterAtual)) {
                     //System.out.println(caracterAtual + " é Delimitador: Linha " + linha + " - Coluna " + (i - lastColuna));
-                    tokens.add(new Token(cadeia, (i - lastColuna), linha, "Delimitador"));
+                    tokens.add(new Token(caracterAtual+"", (i - lastColuna), linha, "Delimitador"));
                     saida = saida + "\n" + caracterAtual + " é Delimitador: Linha " + linha + " - Coluna " + (i - lastColuna);
                 }
             } else {
@@ -97,7 +97,7 @@ public class ScannerAF {
     private int barriuMenos(String entrada, int i, String cadeia) {
 
         if (verificaDigito(entrada.charAt(i + 1))) {
-            if ((verificaDigito(entrada.charAt(i - 1)) || verificaLetra(entrada.charAt(i - 1)) || entrada.charAt(i - 1) == ')')) {
+            if ((verificaDigito(entrada.charAt(i - 1)) || verificaLetra(entrada.charAt(i - 1)) || entrada.charAt(i - 1) == ')' )) {
                 //É um Operador
                 estado = 6;
                 i = verificaOperador(entrada, i, cadeia);
@@ -282,6 +282,7 @@ public class ScannerAF {
 
     }
 
+    // identificador está ok, salvando erros e tokens validos - estado 98 erro de identificador
     private int verificaIdentificador(String entrada, int i, String cadeia) {
         int tam = entrada.length();
         char caracterAtual;
@@ -296,9 +297,16 @@ public class ScannerAF {
 
                         estado = 1;
                         cadeia = cadeia.concat("" + caracterAtual);
-                    } else {
+                    } else if (caracterAtual == ' ' || caracterAtual == '\n') {
                         estado = 2;
                         j--;
+                    } else if (verificaDelimitador(caracterAtual) || verificaInicioDeOperador(caracterAtual) || caracterAtual =='-') {
+                        estado = 2;
+                        j--;
+                    } else {
+                        cadeia = cadeia.concat("" + caracterAtual);
+                        estado = 98;
+                       
                     }
                     break;
                 case 2:
@@ -317,6 +325,26 @@ public class ScannerAF {
                         estado = 0;
                         j--;
                     }
+                    break;
+
+                case 98:
+
+                    if (caracterAtual == ' '){
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "Identificador mal formado"));
+                        this.cadeia = "";
+                        estado = 0;
+                    
+                    }else if(verificaDelimitador(caracterAtual) || verificaInicioDeOperador(caracterAtual)) {
+                        tokens.add(new Token(cadeia, (i - lastColuna), linha, "Identificador mal formado"));
+                        this.cadeia = "";
+                      
+                        estado = 0;
+                        j--;
+                    } else {
+                        cadeia = cadeia.concat("" + caracterAtual);
+                        estado = 98;
+                    }
+
                     break;
 
                 default:
@@ -525,8 +553,8 @@ public class ScannerAF {
 
                 case 17:    //Erro identificador mal formado
                     //System.out.println("Erro identificador mal formado: Linha " + linha + " - Coluna " + (i - lastColuna));
-                    tokens.add(new Token(cadeia, (i - lastColuna), linha, "Erro identificador mal formado"));
-                    saida = saida + "\n" + "Erro identificador mal formado: Linha " + linha + " - Coluna " + (i - lastColuna);
+                    tokens.add(new Token(cadeia, (i - lastColuna), linha, "Erro Operador mal formado"));
+                    saida = saida + "\n" + "Erro Operador mal formado: Linha " + linha + " - Coluna " + (i - lastColuna);
                     this.cadeia = "";
                     estado = 0;
                     j = j - 2;
@@ -611,7 +639,7 @@ public class ScannerAF {
         }
     }
 
-     // Char está ok, salvando erros e tokens validos
+    // String está ok, salvando erros e tokens validos - estado 99 erro de string
     private int verificaString(String entrada, int i, String cadeia) {
 
         int tam = entrada.length();
@@ -752,6 +780,11 @@ public class ScannerAF {
 
     public ArrayList<Token> getTokens() {
         return tokens;
+    }
+
+    public boolean verificaSeparadorLexema(char caracter) {
+
+        return true;
     }
 
 }
