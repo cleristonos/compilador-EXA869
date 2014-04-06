@@ -389,7 +389,7 @@ public class ScannerAF {
                     if (verificaDigito(caracterAtual)) {
                         estado = 4;
                         cadeia = cadeia.concat("" + caracterAtual);
-                    } else if (verificaDelimitador(caracterAtual) || verificaInicioDeOperador(caracterAtual) || caracterAtual == ' ' || caracterAtual == '\n') {
+                    } else if (caracterAtual != '.' && (verificaDelimitador(caracterAtual) || verificaInicioDeOperador(caracterAtual) || caracterAtual == ' ' || caracterAtual == '\n')) {
                         estado = 5;
                         j--;
                     } else {
