@@ -7,22 +7,22 @@ package analizadorlexico;
 import java.util.ArrayList;
 
 public class Terminal extends javax.swing.JFrame {
-    
+
     private ScannerController sc;
     private ArrayList<Token> tabelaTokens;
-    
+
     public Terminal() {
         initComponents();
         this.setVisible(true);
     }
-    
+
     public Terminal(ScannerController sc) {
         initComponents();
         this.sc = sc;
-        
+
         tabelaTokens = new ArrayList<>();
         botaoGeraTabela.setVisible(false);
-        
+
         this.setVisible(true);
     }
 
@@ -51,6 +51,7 @@ public class Terminal extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
+        saida.setEditable(false);
         saida.setBackground(new java.awt.Color(0, 0, 0));
         saida.setColumns(20);
         saida.setFont(new java.awt.Font("Monospaced", 1, 13)); // NOI18N
@@ -58,9 +59,10 @@ public class Terminal extends javax.swing.JFrame {
         saida.setRows(5);
         jScrollPane1.setViewportView(saida);
 
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel1.setText("SAÍDA");
 
-        botaoGeraTabela.setText("Gerar Tabela de Símbolos");
+        botaoGeraTabela.setText("Gerar Tabelas");
         botaoGeraTabela.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 botaoGeraTabelaActionPerformed(evt);
@@ -100,7 +102,6 @@ public class Terminal extends javax.swing.JFrame {
 
         codigo.setColumns(20);
         codigo.setRows(5);
-        codigo.setText("25 25.5 255. 255.a 255aa 255.55a -255.5 -25. -26.58@\nif main class-3  as1a1s)-2 a@sa3s_a \n   f_dt123r_f1d _abc -1 2555.355a55 \n+12.12323123 \\\"string1\\\" \\\"string222222222222222222222222222222222\\\"   \n \n a 1 23 ¬ £casa \n£teste £ 'asda' \\\"string mal formada");
         codigo.addCaretListener(new javax.swing.event.CaretListener() {
             public void caretUpdate(javax.swing.event.CaretEvent evt) {
                 codigoCaretUpdate(evt);
@@ -108,6 +109,7 @@ public class Terminal extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(codigo);
 
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel2.setText("CÓDIGO");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -156,7 +158,7 @@ public class Terminal extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(sair, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -182,7 +184,7 @@ public class Terminal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void executarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executarActionPerformed
-        
+
         String saida = "";
         sc.getScanner().lerEntrada(codigo.getText());
 
@@ -193,29 +195,58 @@ public class Terminal extends javax.swing.JFrame {
         for (Token token : tabelaTokens) {
             saida += token.getLexema() + " - " + token.decodificaCLassificacao(token.getClassificacao()) + "\n";
         }
-        
+
         this.saida.setText(saida);
-        
+
         if (tabelaTokens.size() > 0) {
             botaoGeraTabela.setVisible(true);
         }
+
+        boolean ok = true;
+
+        for (int i = 0; i < tabelaTokens.size(); i++) {
+            if (tabelaTokens.get(i).getClassificacao() > 7) {
+                ok = false;
+                break;
+            }
+        }
         
-        
+        if (ok) {
+            new Dialog(null, true, "Código sem Erros Léxicos");
+        } else {
+            new Dialog(null, true, "Erros Léxicos Foram Encontrados");
+        }
+
     }//GEN-LAST:event_executarActionPerformed
-    
+
     private void sairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sairActionPerformed
         System.exit(0);
     }//GEN-LAST:event_sairActionPerformed
-    
+
     private void codigoCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_codigoCaretUpdate
         //String saida = sc.getScanner().lerEntrada(codigo.getText());
         //this.saida.setText(saida);
     }//GEN-LAST:event_codigoCaretUpdate
-    
+
     private void botaoGeraTabelaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoGeraTabelaActionPerformed
-        
-        new TabelaSimbolos(tabelaTokens);
-        
+
+        ArrayList<Token> tt = new ArrayList<>();
+        ArrayList<Token> te = new ArrayList<>();
+
+        Token t;
+        for (int i = 0; i < tabelaTokens.size(); i++) {
+            t = tabelaTokens.get(i);
+            if (t.getClassificacao() <= 7) {//É um token bem formado
+                tt.add(t);
+            } else {
+                te.add(t);
+            }
+
+        }
+
+        new TabelaSimbolos(tt);
+        new TabelaErros(te);
+
     }//GEN-LAST:event_botaoGeraTabelaActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botaoGeraTabela;

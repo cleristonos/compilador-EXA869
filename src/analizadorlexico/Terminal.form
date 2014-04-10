@@ -27,7 +27,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="21" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
@@ -113,6 +113,7 @@
           <SubComponents>
             <Component class="javax.swing.JTextArea" name="saida">
               <Properties>
+                <Property name="editable" type="boolean" value="false"/>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="0" green="0" red="0" type="rgb"/>
                 </Property>
@@ -130,12 +131,15 @@
         </Container>
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Tahoma" size="12" style="1"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="SA&#xcd;DA"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="botaoGeraTabela">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Gerar Tabela de S&#xed;mbolos"/>
+            <Property name="text" type="java.lang.String" value="Gerar Tabelas"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botaoGeraTabelaActionPerformed"/>
@@ -191,7 +195,6 @@
               <Properties>
                 <Property name="columns" type="int" value="20"/>
                 <Property name="rows" type="int" value="5"/>
-                <Property name="text" type="java.lang.String" value="25 25.5 255. 255.a 255aa 255.55a -255.5 -25. -26.58@&#xa;if main class-3  as1a1s)-2 a@sa3s_a &#xa;   f_dt123r_f1d _abc -1 2555.355a55 &#xa;+12.12323123 \u005c&quot;string1\u005c&quot; \u005c&quot;string222222222222222222222222222222222\u005c&quot;   &#xa; &#xa; a 1 23 &#xac; &#xa3;casa &#xa;&#xa3;teste &#xa3; &apos;asda&apos; \u005c&quot;string mal formada" containsInvalidXMLChars="true"/>
               </Properties>
               <Events>
                 <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="codigoCaretUpdate"/>
@@ -201,6 +204,9 @@
         </Container>
         <Component class="javax.swing.JLabel" name="jLabel2">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Tahoma" size="12" style="1"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="C&#xd3;DIGO"/>
           </Properties>
         </Component>
